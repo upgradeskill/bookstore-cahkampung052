@@ -1,11 +1,26 @@
 package database
 
-import "bookstore/app/model"
+import (
+	"bookstore/http/model"
+	"bookstore/http/repository"
 
-func (d *DB) ImportDummyData() {
+	"gorm.io/gorm"
+)
+
+type booksMigration struct {
+	conn *gorm.DB
+}
+
+func BookMigration(conn *gorm.DB) repository.BooksMigrationRepo {
+	return &booksMigration{
+		conn: conn,
+	}
+}
+
+func (book *booksMigration) ImportSeeder() {
 	// Skip migration if books table already exist
 	// and run migration if books table not exist
-	isExists := d.db.Migrator().HasTable("books")
+	isExists := book.conn.Migrator().HasTable("books")
 	if isExists {
 		return
 	}
@@ -35,6 +50,6 @@ func (d *DB) ImportDummyData() {
 		}}
 
 	// Create table books and insert batch data dummy
-	d.db.AutoMigrate(model.Books{})
-	d.db.Create(books)
+	book.conn.AutoMigrate(model.Books{})
+	book.conn.Create(books)
 }

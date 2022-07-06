@@ -1,30 +1,30 @@
-package database
+package driver
 
 import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
-type DB struct {
-	MYSQL_USERNAME string
-	MYSQL_PASSWORD string
-	MYSQL_HOST     string
-	MYSQL_DB       string
-	MYSQL_PORT     string
-	db             *gorm.DB
+var config = map[string]string{
+	"MYSQL_USERNAME": "root",
+	"MYSQL_PASSWORD": "bismillah",
+	"MYSQL_HOST":     "localhost",
+	"MYSQL_DB":       "bookstore",
+	"MYSQL_PORT":     "3306",
 }
 
-func (d *DB) Connect() (*gorm.DB, error) {
-	dsn := d.MYSQL_USERNAME + ":" + d.MYSQL_PASSWORD + "@tcp(" + d.MYSQL_HOST + ":" + d.MYSQL_PORT + ")/" + d.MYSQL_DB + "?charset=utf8mb4&parseTime=True&loc=Local"
+type DB struct {
+	db *gorm.DB
+}
+
+var connection = &DB{}
+
+func ConnectMysql() (*gorm.DB, error) {
+	dsn := config["MYSQL_USERNAME"] + ":" + config["MYSQL_PASSWORD"] + "@tcp(" + config["MYSQL_HOST"] + ":" + config["MYSQL_PORT"] + ")/" + config["MYSQL_DB"] + "?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic("Cannot connect to database")
 	}
 
-	d.db = db
-	return d.db, nil
-}
-
-func (d *DB) Get() *DB {
-	return d
+	return db, nil
 }
