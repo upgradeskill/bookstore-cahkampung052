@@ -18,7 +18,7 @@ type Books struct {
 
 func BooksHandler(db *gorm.DB) *Books {
 	return &Books{
-		Repo: domain.MysqlBooksRepo(db),
+		Repo: domain.MysqlBooksDomain(db),
 	}
 }
 
