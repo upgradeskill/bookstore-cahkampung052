@@ -8,7 +8,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
+	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
@@ -31,11 +33,29 @@ func (u *Users) GetAll(c echo.Context) error {
 	}
 
 	var respUsers []model.UserPayload
-	var roles map[string]interface{}
+	var roles map[string]map[string]bool
 
 	for _, val := range users {
 
+		// Set custom claims
+		claims := &pkg.JwtCustomClaims{
+			val.Id,
+			val.Email,
+			val.Roles,
+			jwt.StandardClaims{
+				ExpiresAt: time.Now().Add(time.Hour * 72).Unix(),
+			},
+		}
+
+		// Decode json roles
 		err := json.Unmarshal([]byte(val.Roles), &roles)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		// Create token with claims
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+		t, err := token.SignedString([]byte("secret"))
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -45,6 +65,7 @@ func (u *Users) GetAll(c echo.Context) error {
 			Email: val.Email,
 			Id:    val.Id,
 			Roles: roles,
+			Token: t,
 		})
 	}
 

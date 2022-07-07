@@ -3,6 +3,7 @@ module bookstore
 go 1.16
 
 require (
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/go-playground/validator v9.31.0+incompatible // indirect
 	github.com/go-playground/validator/v10 v10.11.0 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect

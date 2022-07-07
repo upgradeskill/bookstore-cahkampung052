@@ -28,5 +28,5 @@ func main() {
 	handler.SetUpRoutes(e)
 
 	// Start server
-	e.Start(":1323")
+	e.Start(":4200")
 }

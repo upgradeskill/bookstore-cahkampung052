@@ -8,8 +8,9 @@ type User struct {
 }
 
 type UserPayload struct {
-	Id    int         `json:"id"`
-	Name  string      `json:"name"`
-	Email string      `json:"email"`
-	Roles interface{} `json:"roles"`
+	Id    int                        `json:"id"`
+	Name  string                     `json:"name"`
+	Email string                     `json:"email"`
+	Roles map[string]map[string]bool `json:"roles"`
+	Token string                     `json:"token"`
 }

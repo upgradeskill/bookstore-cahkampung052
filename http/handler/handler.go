@@ -21,11 +21,11 @@ func SetUpRoutes(e *echo.Echo) {
 
 	// Routes for bookstore
 	boostore := routes.BooksHandler(connection)
-	e.GET("/books", boostore.GetAll, middle.Roles("auth"))
-	e.GET("/books/:id", boostore.GetById)
-	e.POST("/books", boostore.Create)
-	e.PUT("/books", boostore.Update)
-	e.DELETE("/books/:id", boostore.Delete)
+	e.GET("/books", boostore.GetAll, middle.Auth, middle.Roles("books:view"))
+	e.GET("/books/:id", boostore.GetById, middle.Auth, middle.Roles("books:view"))
+	e.POST("/books", boostore.Create, middle.Auth, middle.Roles("books:create"))
+	e.PUT("/books", boostore.Update, middle.Auth, middle.Roles("books:update"))
+	e.DELETE("/books/:id", boostore.Delete, middle.Auth, middle.Roles("books:delete"))
 
 	// Routes for users
 	users := routes.UsersHandler(connection)
