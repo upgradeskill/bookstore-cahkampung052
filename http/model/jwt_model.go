@@ -1,8 +1,8 @@
-package pkg
+package model
 
 import "github.com/golang-jwt/jwt"
 
-type JwtCustomClaims struct {
+type JwtUserClaims struct {
 	Id    int    `json:"id"`
 	Email string `json:"email"`
 	Roles string `json:"roles"`

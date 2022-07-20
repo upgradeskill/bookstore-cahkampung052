@@ -1,10 +1,10 @@
-package routes
+package handler
 
 import (
 	"bookstore/app/pkg"
-	domain "bookstore/http/domain/books"
+	"bookstore/http/domain"
 	"bookstore/http/model"
-	"bookstore/http/repository"
+	repository "bookstore/http/repository/books"
 	"net/http"
 	"strconv"
 
@@ -12,17 +12,17 @@ import (
 	"gorm.io/gorm"
 )
 
-type Books struct {
+type booksHandler struct {
 	Repo repository.BooksRepo
 }
 
-func BooksHandler(db *gorm.DB) *Books {
-	return &Books{
+func BooksHandler(db *gorm.DB) *booksHandler {
+	return &booksHandler{
 		Repo: domain.MysqlBooksDomain(db),
 	}
 }
 
-func (b *Books) GetAll(c echo.Context) error {
+func (b *booksHandler) GetAll(c echo.Context) error {
 	// Get all book and validate if no error
 	books, err := b.Repo.Fetch()
 	if err != nil {
@@ -32,7 +32,7 @@ func (b *Books) GetAll(c echo.Context) error {
 	return c.JSON(http.StatusOK, pkg.ResponseFormatter("success get all data", books))
 }
 
-func (b *Books) GetById(c echo.Context) error {
+func (b *booksHandler) GetById(c echo.Context) error {
 	// Validate params must number
 	bookId, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -48,7 +48,7 @@ func (b *Books) GetById(c echo.Context) error {
 	return c.JSON(http.StatusOK, pkg.ResponseFormatter("success get detail book", book))
 }
 
-func (b *Books) Create(c echo.Context) (err error) {
+func (b *booksHandler) Create(c echo.Context) (err error) {
 	payload := new(model.Books)
 	if err = c.Bind(payload); err != nil {
 		return c.JSON(http.StatusBadRequest, pkg.ResponseFormatter(err.Error(), nil))
@@ -67,7 +67,7 @@ func (b *Books) Create(c echo.Context) (err error) {
 	return c.JSON(http.StatusOK, pkg.ResponseFormatter("success create new book", book))
 }
 
-func (b *Books) Update(c echo.Context) (err error) {
+func (b *booksHandler) Update(c echo.Context) (err error) {
 	payload := new(model.Books)
 	if err = c.Bind(payload); err != nil {
 		c.JSON(http.StatusBadRequest, pkg.ResponseFormatter(err.Error(), nil))
@@ -86,7 +86,7 @@ func (b *Books) Update(c echo.Context) (err error) {
 	return c.JSON(http.StatusOK, pkg.ResponseFormatter("success update book", book))
 }
 
-func (b *Books) Delete(c echo.Context) error {
+func (b *booksHandler) Delete(c echo.Context) error {
 	bookId, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, pkg.ResponseFormatter("failed delete detail book, please insert number on param", nil))

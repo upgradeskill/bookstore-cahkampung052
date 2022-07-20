@@ -1,10 +1,10 @@
-package routes
+package handler
 
 import (
 	"bookstore/app/pkg"
-	domain "bookstore/http/domain/users"
+	"bookstore/http/domain"
 	"bookstore/http/model"
-	"bookstore/http/repository"
+	repository "bookstore/http/repository/users"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -15,17 +15,17 @@ import (
 	"gorm.io/gorm"
 )
 
-type Users struct {
+type userHandler struct {
 	Repo repository.UserRepo
 }
 
-func UsersHandler(db *gorm.DB) *Users {
-	return &Users{
+func UsersHandler(db *gorm.DB) *userHandler {
+	return &userHandler{
 		Repo: domain.MysqlUserDomain(db),
 	}
 }
 
-func (u *Users) GetAll(c echo.Context) error {
+func (u *userHandler) GetAll(c echo.Context) error {
 	// Get all users and validate if no error
 	users, err := u.Repo.Fetch()
 	if err != nil {
@@ -33,24 +33,24 @@ func (u *Users) GetAll(c echo.Context) error {
 	}
 
 	var respUsers []model.UserPayload
-	var roles map[string]map[string]bool
 
 	for _, val := range users {
+		var roles map[string]map[string]bool
+
+		// Decode json roles
+		err := json.Unmarshal([]byte(val.Roles), &roles)
+		if err != nil {
+			fmt.Println(err)
+		}
 
 		// Set custom claims
-		claims := &pkg.JwtCustomClaims{
+		claims := &model.JwtUserClaims{
 			val.Id,
 			val.Email,
 			val.Roles,
 			jwt.StandardClaims{
 				ExpiresAt: time.Now().Add(time.Hour * 72).Unix(),
 			},
-		}
-
-		// Decode json roles
-		err := json.Unmarshal([]byte(val.Roles), &roles)
-		if err != nil {
-			fmt.Println(err)
 		}
 
 		// Create token with claims

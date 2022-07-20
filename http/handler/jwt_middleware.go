@@ -1,4 +1,4 @@
-package middle
+package handler
 
 import (
 	"bookstore/app/pkg"
@@ -12,19 +12,17 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-var Auth = middleware.JWTWithConfig(middleware.JWTConfig{
+var JwtMiddleware = middleware.JWTWithConfig(middleware.JWTConfig{
 	SigningKey: []byte("secret"),
 })
 
-func Roles(text string) echo.MiddlewareFunc {
+func Auth(text string) echo.MiddlewareFunc {
 	return echo.MiddlewareFunc(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return echo.HandlerFunc(func(c echo.Context) error {
 			var roles map[string]map[string]bool
 
 			user := c.Get("user").(*jwt.Token)
 			claims := user.Claims.(jwt.MapClaims)
-
-			// Convert claims from map[string]interface{} to string
 			str := claims["roles"].(string)
 
 			// encode json roles
@@ -38,7 +36,7 @@ func Roles(text string) echo.MiddlewareFunc {
 				return next(c)
 			}
 
-			return c.JSON(http.StatusUnauthorized, pkg.ResponseFormatter("You don't have credential to access this page", nil))
+			return c.JSON(http.StatusForbidden, pkg.ResponseFormatter("You don't have credential to access this page", nil))
 		})
 	})
 }

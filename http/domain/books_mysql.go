@@ -2,19 +2,19 @@ package domain
 
 import (
 	"bookstore/http/model"
-	"bookstore/http/repository"
+	repository "bookstore/http/repository/books"
 	"errors"
 	"fmt"
 
 	"gorm.io/gorm"
 )
 
+var books []model.Books
+var book model.Books
+
 type mysqlBooksDomain struct {
 	Db *gorm.DB
 }
-
-var books []model.Books
-var book model.Books
 
 func MysqlBooksDomain(connection *gorm.DB) repository.BooksRepo {
 	return &mysqlBooksDomain{
@@ -35,6 +35,7 @@ func (m *mysqlBooksDomain) GetById(bookId int32) (model.Books, error) {
 	}
 
 	fmt.Println(bookId)
+	fmt.Println(book)
 
 	return book, nil
 }
@@ -45,7 +46,7 @@ func (m *mysqlBooksDomain) Create(book *model.Books) (model.Books, error) {
 		return model.Books{}, result.Error
 	}
 
-	return model.Books{}, nil
+	return *book, nil
 }
 
 func (m *mysqlBooksDomain) Update(book *model.Books) (model.Books, error) {

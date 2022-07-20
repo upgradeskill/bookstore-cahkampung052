@@ -2,7 +2,7 @@ package database
 
 import (
 	"bookstore/http/model"
-	"bookstore/http/repository"
+	repository "bookstore/http/repository/books"
 
 	"gorm.io/gorm"
 )

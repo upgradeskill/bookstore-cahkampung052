@@ -5,22 +5,16 @@ import (
 	"gorm.io/gorm"
 )
 
-var config = map[string]string{
-	"MYSQL_USERNAME": "root",
-	"MYSQL_PASSWORD": "bismillah",
-	"MYSQL_HOST":     "localhost",
-	"MYSQL_DB":       "bookstore",
-	"MYSQL_PORT":     "3306",
+type ConfigDb struct {
+	MYSQL_USERNAME string
+	MYSQL_PASSWORD string
+	MYSQL_HOST     string
+	MYSQL_DB       string
+	MYSQL_PORT     string
 }
 
-type DB struct {
-	db *gorm.DB
-}
-
-var connection = &DB{}
-
-func ConnectMysql() (*gorm.DB, error) {
-	dsn := config["MYSQL_USERNAME"] + ":" + config["MYSQL_PASSWORD"] + "@tcp(" + config["MYSQL_HOST"] + ":" + config["MYSQL_PORT"] + ")/" + config["MYSQL_DB"] + "?charset=utf8mb4&parseTime=True&loc=Local"
+func ConnectMysql(c ConfigDb) (*gorm.DB, error) {
+	dsn := c.MYSQL_USERNAME + ":" + c.MYSQL_PASSWORD + "@tcp(" + c.MYSQL_HOST + ":" + c.MYSQL_PORT + ")/" + c.MYSQL_DB + "?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic("Cannot connect to database")

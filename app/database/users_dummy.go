@@ -2,8 +2,7 @@ package database
 
 import (
 	"bookstore/http/model"
-	"bookstore/http/repository"
-	"fmt"
+	repository "bookstore/http/repository/users"
 
 	"gorm.io/gorm"
 )
@@ -21,7 +20,6 @@ func UserMigration(conn *gorm.DB) repository.UserMigrationRepo {
 func (user *userMigration) ImportSeeder() {
 	// Skip migration if users table already exist
 	// and run migration if users table not exist
-	fmt.Println("23")
 	isExists := user.conn.Migrator().HasTable("users")
 	if isExists {
 		return

@@ -2,7 +2,7 @@ package domain
 
 import (
 	"bookstore/http/model"
-	"bookstore/http/repository"
+	repository "bookstore/http/repository/users"
 
 	"gorm.io/gorm"
 )
